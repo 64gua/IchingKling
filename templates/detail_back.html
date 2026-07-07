@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>详情 - {{ item.guaname }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <a href="{{ url_for('search') }}?from_detail=1" class="back-link">← 返回搜索列表</a>
+        
+        <form action="{{ url_for('update', id=item['ID']) }}" method="post">
+            <div class="detail-section">
+                <h3>基本信息</h3>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px;">
+                    <div class="form-group">
+                        <label>ID</label>
+                        <input type="text" value="{{ item['ID'] }}" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="guaname">卦名</label>
+                        <input type="text" id="guaname" name="guaname" value="{{ item['guaname'] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="stockname">股票名</label>
+                        <input type="text" id="stockname" name="stockname" value="{{ item['stockname'] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="mydatetime">摇卦日期</label>
+                        <input type="text" id="mydatetime" name="mydatetime" value="{{ item['mydatetime'] }}">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="detail-section">
+                <h3 for="subject">标题</h3>
+                <input type="text" id="subject" name="subject" value="{{ item['subject'] }}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;">
+            </div>
+            
+            <div class="detail-section">
+                <h3 for="content">内容</h3>
+                <textarea id="content" name="content" rows="15" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px; font-family:monospace;">{{ item['content'] }}</textarea>
+            </div>
+            
+            <div style="margin-bottom:20px;">
+                <button type="submit" class="btn btn-primary">保存修改</button>
+            </div>
+        </form>
+        
+        <div class="detail-section">
+            <h3>图片 ({{ images|length }} 张)</h3>
+            
+            {% if images %}
+            <div class="images-container">
+                {% for image in images %}
+                <div class="image-item">
+                    <img src="{{ url_for('static', filename='images/' + image) }}" alt="K线图">
+                    <form action="{{ url_for('delete_image', id=item['ID']) }}" method="post" class="delete-form">
+                        <input type="hidden" name="image_path" value="{{ image }}">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('确定要删除这张图片吗？');">删除</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p style="color:#999; margin-top:10px;">暂无图片</p>
+            {% endif %}
+            
+            <form action="{{ url_for('update', id=item['ID']) }}" method="post" class="add-image-form">
+                <input type="hidden" name="guaname" value="{{ item['guaname'] }}">
+                <input type="hidden" name="stockname" value="{{ item['stockname'] }}">
+                <input type="hidden" name="mydatetime" value="{{ item['mydatetime'] }}">
+                <input type="hidden" name="subject" value="{{ item['subject'] }}">
+                <input type="hidden" name="content" value="{{ item['content'] }}">
+                <label for="new_image" style="white-space:nowrap;">添加图片文件名:</label>
+                <input type="text" id="new_image" name="new_image" placeholder="如：000001_2022-11-25_35d.jpg">
+                <button type="submit" class="btn btn-secondary">添加</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

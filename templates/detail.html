@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>详情 - {{ item.guaname }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <a href="{{ url_for('search') }}?from_detail=1" class="back-link">← 返回搜索列表</a>
+        
+        <form action="{{ url_for('update', id=item['ID']) }}" method="post">
+            <div class="detail-section">
+                <span style="font-size:12px;">ID:{{ item['ID'] }}</span>
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;">
+                    <div class="form-group">
+                        <label for="guaname">卦名</label>
+                        <input type="text" id="guaname" name="guaname" value="{{ item['guaname'] }}" style="width:auto; min-width:60px; max-width:100px;">
+                    </div>
+                    <div class="form-group">
+                        <label for="stockname">股票名</label>
+                        <input type="text" id="stockname" name="stockname" value="{{ item['stockname'] }}"  style="width:auto; min-width:60px; max-width:100px;">
+                    </div>
+                    <div class="form-group">
+                        <label for="mydatetime">摇卦日期</label>
+                        <input type="text" id="mydatetime" name="mydatetime" value="{{ item['mydatetime'] }}"  style="width:auto; min-width:60px; max-width:100px;">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="detail-section">
+                <span>预测主题</span>
+                <input type="text" id="subject" name="subject" value="{{ item['subject'] }}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;">
+            </div>
+            <div class="detail-section">
+                <span>内容</span>
+                <textarea id="content" name="content" rows="20" style="width:100%; padding:10px 10px 0px 10px; border:1px solid #ddd; border-radius:4px; font-family:monospace; font-size:clamp(12px, 2.5vw, 16px); white-space:nowrap; overflow-x:auto; overflow-y:auto; resize:vertical;">{{ item['content'] }}</textarea>
+            </div>
+            <div style="margin-top:-2px; text-align: right;">
+                <button type="submit" class="btn btn-primary">保存修改</button>
+            </div>
+        </form>
+        
+        <div class="detail-section">
+            <div style="margin-top:-5px; text-align: left;">
+                <button type="submit" class="btn btn-secondary">画图</button>
+            </div>
+            {% if images %}
+            <div class="images-container" id="imagers">
+                {% for img in images %}
+                <img src="{{ url_for('static', filename='images/' + img) }}" 
+                    style="max-width: 100%; display: none;">
+                {% endfor %}
+            </div>
+            <div style="display:flex; align-items:center; gap:20x; flex-wrap:wrap;">
+                <span style="margin:0; font-weight:bold;">图片 ({{ images|length }} 张)</span>
+                <a href="#" onclick="switchImage(-1); return false;">◀</a>
+                <a href="#" onclick="switchImage(1); return false;">▶</a>
+            </div>
+            {% else %}
+            <p style="color:#999; margin-top:10px;">暂无图片</p>
+            {% endif %}
+            
+        </div>
+    </div>
+
+    <script>
+        // 全部由 JavaScript 控制
+        var imgs = document.querySelectorAll('#imagers img');
+        var total = imgs.length;
+        var current = 0;
+        
+        if (total > 0) imgs[0].style.display = 'block';
+
+        function switchImage(dir) {
+            if (total === 0) return;
+            imgs[current].style.display = 'none';
+            current = (current + dir + total) % total;
+            imgs[current].style.display = 'block';
+        }
+    </script>
+</body>
+</html>

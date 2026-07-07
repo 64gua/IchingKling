@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>极简股票查询</title>
+</head>
+<body>
+    <h2>📈 股票数据查询 (前5条)</h2>
+    <form id="stockForm">
+        <label>股票代码 (如 AAPL):</label>
+        <input type="text" id="symbol" value="AAPL" required><br><br>
+        <label>开始日期:</label>
+        <input type="date" id="startDate" value="2026-01-01" required><br><br>
+        <label>结束日期:</label>
+        <input type="date" id="endDate" value="2026-01-05" required><br><br>
+        <button type="submit">提交</button>
+    </form>
+    <hr>
+    <h3>查询结果 (前5行)</h3>
+    <div id="result" style="white-space:pre-wrap; font-family:monospace;"></div>
+
+    <script>
+        (function() {
+            const form = document.getElementById('stockForm');
+            const resultDiv = document.getElementById('result');
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();  // 阻止页面刷新
+
+                const symbol = document.getElementById('symbol').value.trim() || 'AAPL';
+                const start = document.getElementById('startDate').value;
+                const end = document.getElementById('endDate').value;
+
+                if (!start || !end) {
+                    resultDiv.textContent = '⚠️ 请选择完整的日期范围。';
+                    return;
+                }
+
+                // 构造查询参数
+                const params = new URLSearchParams({
+                    symbol: symbol,
+                    start: start,
+                    end: end
+                });
+
+                try {
+                    resultDiv.textContent = '⏳ 加载中...';
+                    const response = await fetch(`/api/stock?${params.toString()}`);
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        if (data.length === 0) {
+                            resultDiv.textContent = '📭 该时间段内无数据。';
+                        } else {
+                            // 显示前5条，格式化成表格风格
+                            let output = '日期\t开盘\t最高\t最低\t收盘\t成交量\n';
+                            output += '----------------------------------------\n';
+                            data.slice(0, 5).forEach(row => {
+                                 output += `${row.date}\t${row.open}\t${row.high}\t${row.low}\t${row.close}\t${row.volume}\n`;
+                            });
+            
+                            if (data.length > 5) {
+                                output += `\n... 共 ${data.length} 条，仅显示前5条。`;
+                            }
+                            resultDiv.textContent = output;
+                        }
+                    } else {
+                        resultDiv.textContent = `❌ 错误: ${data.error || '未知错误'}`;
+                    }
+                } catch (err) {
+                    resultDiv.textContent = `❌ 请求失败: ${err.message}`;
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>易经股票预测搜索</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align:center; color:#4CAF50; margin-bottom:30px;">易经股票预测搜索</h1>
+        
+        <form action="{{ url_for('search') }}" method="post" class="search-form">
+            <div class="form-group">
+                <label for="guaname">卦名</label>
+                <input type="text" id="guaname" name="guaname" placeholder="如：履、讼、同人">
+            </div>
+            
+            <div class="form-group">
+                <label for="stockname">股票名</label>
+                <input type="text" id="stockname" name="stockname" placeholder="如：上证指数、平安银行">
+            </div>
+            
+            <div class="form-group">
+                <label for="start_date">开始日期</label>
+                <input type="text" id="start_date" name="start_date" placeholder="YYYY-MM-DD" pattern="\d{4}-\d{2}-\d{2}">
+            </div>
+            
+            <div class="form-group">
+                <label for="end_date">结束日期</label>
+                <input type="text" id="end_date" name="end_date" placeholder="YYYY-MM-DD" pattern="\d{4}-\d{2}-\d{2}">
+            </div>
+            
+            <div class="form-group">
+                <label for="keyword">关键词</label>
+                <input type="text" id="keyword" name="keyword" placeholder="搜索标题或内容">
+            </div>
+            
+            <div class="search-actions">
+                <button type="submit" class="btn btn-primary">搜索</button>
+                <button type="reset" class="btn btn-secondary">重置</button>
+            </div>
+        </form>
+        
+        {% if results %}
+        <h2 style="color:#4CAF50; margin:30px 0 20px;">搜索结果 ({{ results|length }} 条)</h2>
+        
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>卦名</th>
+                    <th>股票名</th>
+                    <th>摇卦日期</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in results %}
+                <tr>
+                    <td>{{ row['ID'] }}</td>
+                    <td>{{ row['guaname'] }}</td>
+                    <td>{{ row['stockname'] }}</td>
+                    <td>{{ row['mydatetime'] }}</td>
+                    <td class="actions">
+                        <a href="{{ url_for('detail', id=row['ID']) }}">
+                            <button type="button" class="btn btn-secondary">编辑</button>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+    
+    <script>
+        // 日期输入框添加日期选择功能和格式验证
+        document.addEventListener('DOMContentLoaded', function() {
+            var startDateInput = document.getElementById('start_date');
+            var endDateInput = document.getElementById('end_date');
+            
+            if (startDateInput) {
+                startDateInput.addEventListener('focus', function() {
+                    var datePicker = document.createElement('input');
+                    datePicker.type = 'date';
+                    datePicker.style.display = 'none';
+                    document.body.appendChild(datePicker);
+                    datePicker.addEventListener('change', function() {
+                        startDateInput.value = datePicker.value;
+                        document.body.removeChild(datePicker);
+                    });
+                    datePicker.click();
+                });
+            }
+            
+            if (endDateInput) {
+                endDateInput.addEventListener('focus', function() {
+                    var datePicker = document.createElement('input');
+                    datePicker.type = 'date';
+                    datePicker.style.display = 'none';
+                    document.body.appendChild(datePicker);
+                    datePicker.addEventListener('change', function() {
+                        endDateInput.value = datePicker.value;
+                        document.body.removeChild(datePicker);
+                    });
+                    datePicker.click();
+                });
+            }
+            
+            function validateDate(input) {
+                input.addEventListener('blur', function() {
+                    var value = input.value;
+                    if (value && !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+                        var match = value.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+                        if (match) {
+                            input.value = match[1] + '-' + 
+                                ('0' + match[2]).slice(-2) + '-' + 
+                                ('0' + match[3]).slice(-2);
+                        }
+                    }
+                });
+            }
+            
+            if (startDateInput) validateDate(startDateInput);
+            if (endDateInput) validateDate(endDateInput);
+        });
+    </script>
+</body>
+</html>

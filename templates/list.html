@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索结果</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <a href="{{ url_for('search') }}" class="back-link">← 返回搜索</a>
+        
+        <h2 style="color:#4CAF50; margin-bottom:20px;">搜索结果 ({{ results|length }} 条)</h2>
+        
+        {% if results %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>卦名</th>
+                    <th>股票名</th>
+                    <th>摇卦日期</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in results %}
+                <tr>
+                    <td>{{ row['ID'] }}</td>
+                    <td>{{ row['guaname'] }}</td>
+                    <td>{{ row['stockname'] }}</td>
+                    <td>{{ row['mydatetime'] }}</td>
+                    <td class="actions">
+                        <a href="{{ url_for('detail', id=row['ID']) }}">
+                            <button type="button" class="btn btn-secondary">编辑</button>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="no-data">
+            <p>没有找到匹配的记录</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
