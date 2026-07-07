@@ -2,9 +2,9 @@ import pandas as pd
 import os
 
 # 定义常量，CSV文件名
-#STOCK_CSV_FILE = 'stock_and_etf.csv'
-BASE_DIR=os.path.dirname(os.path.abspath(__file__))
-STOCK_CSV_FILE=os.path.join(BASE_DIR,"stock_and_etf.csv")
+STOCK_CSV_FILE = 'stock_and_etf.csv'
+# BASE_DIR=os.path.dirname(os.path.abspath(__file__))
+# STOCK_CSV_FILE=os.path.join(BASE_DIR,"stock_and_etf.csv")
 
 def get_stock_tuple(search_term):
     """
