@@ -49,7 +49,7 @@
             {% if images %}
             <div class="images-container" id="imagers">
                 {% for img in images %}
-                <img src="{{ url_for('static', filename='images/' + img) }}" 
+                <img src="https://raw.githubusercontent.com/64gua/64gua.github.io/main/images/{{ img }}" 
                     style="max-width: 100%; display: none;">
                 {% endfor %}
             </div>
